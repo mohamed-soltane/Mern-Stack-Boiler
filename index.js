@@ -11,17 +11,14 @@ const { User } = require('./models/user');
 const { auth } = require("./middleware/auth")
 
 //* connected to mongoDB
-mongoose
-.connect(db, {useNewUrlParser: true})
-.then(() => console.log('DB connected'))
-.catch(err => console.log.error(error));
+mongoose.connect(db, {useNewUrlParser: true}).then(() => console.log('DB connected')).catch(err => console.log.error(error));
 
 
 app.use(bodyParser.urlencoded({ extended : true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-app.get('/api/user/register', (req,res) => {
+app.get('/api/user/auth', (req,res) => {
    res.status(200).json({
    _id:req._id,
    isAuth: true,
@@ -70,6 +67,15 @@ app.post('/api/user/login', (req,res) => {
     })
 
 })
+
+app.get("/api/user/logout", auth, (req, res) => {
+    User.findOneAndUpdate({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {
+        if (err) return res.json({ success: false, err });
+        return res.status(200).send({
+            success: true
+        });
+    });
+});
 
 const Port = 5000;
 app.listen(Port, console.log(`server started on port ${Port}`));
