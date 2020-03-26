@@ -26,8 +26,34 @@ app.post('/api/user/register', (req,res) => {
     })
     });
 
+app.post('/api/user/login', (req,res) => {
+    //find the email
+    User.find({email: req.body.email}, (err, user) => {
+        if ( !user)
+        return res.json({
+            loginSuccess: false,
+            message: "auth failed,email not found"
+        })
+    
+    //comparePassword
+    user.comparePassword(res.body.password, (error, isMatch) => {
+        if (!isMatch) {
+         return res.json ({loginSuccess: false, message: "wrong password"})
+        }
+    })
 
+     //generateToken
+    yser.generateToken((err, user) => {
+        if (err) return res.status(400).send(err);
+        res.cookie("x_auth", user.token)
+           .status(200)
+           .json({ loginSucces: true })
+        
+    })
 
+    })
+
+})
 
 const Port = 5000;
 app.listen(Port, console.log(`server started on port ${Port}`));
