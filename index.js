@@ -8,16 +8,32 @@ const db = require('./config/key').mongoURI
 
 const { User } = require('./models/user');
 
+const { auth } = require("./middleware/auth")
 
 //* connected to mongoDB
-mongoose.connect(db, {useNewUrlParser: true}).then(() => console.log('DB connected')).catch(err => console.log.error(error));
+mongoose
+.connect(db, {useNewUrlParser: true})
+.then(() => console.log('DB connected'))
+.catch(err => console.log.error(error));
 
 
 app.use(bodyParser.urlencoded({ extended : true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-//* Welcome Page
+app.get('/api/user/register', (req,res) => {
+   res.status(200).json({
+   _id:req._id,
+   isAuth: true,
+   email: req.user.email,
+   name: req.user.name,
+   lastname: req.user.lastename,
+   role: req.user.role
+   })
+})
+
+
+//* User Registration
 app.post('/api/user/register', (req,res) => {
     const user = new User(req.body);
     user.save((err, userData) => {
@@ -28,22 +44,22 @@ app.post('/api/user/register', (req,res) => {
 
 app.post('/api/user/login', (req,res) => {
     //find the email
-    User.find({email: req.body.email}, (err, user) => {
-        if ( !user)
+    User.findOne({email: req.body.email}, (err, user) => {
+        if (!user)
         return res.json({
             loginSuccess: false,
             message: "auth failed,email not found"
-        })
+        });
     
     //comparePassword
-    user.comparePassword(res.body.password, (error, isMatch) => {
+    user.comparePassword(req.body.password, (err, isMatch) => {
         if (!isMatch) {
-         return res.json ({loginSuccess: false, message: "wrong password"})
+         return res.json ({ loginSuccess: false, message: "wrong password" })
         }
-    })
+    });
 
      //generateToken
-    yser.generateToken((err, user) => {
+    user.generateToken((err, user) => {
         if (err) return res.status(400).send(err);
         res.cookie("x_auth", user.token)
            .status(200)
