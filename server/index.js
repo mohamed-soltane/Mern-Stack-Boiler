@@ -77,5 +77,7 @@ app.get("/api/user/logout", auth, (req, res) => {
     });
 });
 
-const Port = 5000;
-app.listen(Port, console.log(`server started on port ${Port}`));
+const port = process.env.Port || 5000
+app.listen(port, () => {
+    console.log(`server started on port ${port}`)
+});

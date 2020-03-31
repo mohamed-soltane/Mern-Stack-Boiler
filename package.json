@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "react blog",
   "main": "index.js",
+  "engine": {
+     "node":"v12.9.0",
+     "npm":"6.10.2"
+  }
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "backend": "nodemon index.js"
+    "start": "node server/index.js",
+    "backend": "nodemon server/index.js"
   },
   "author": "soltane mohamed",
   "license": "ISC",
