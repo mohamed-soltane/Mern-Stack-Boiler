@@ -30,7 +30,7 @@ app.get('/api/user/auth', (req,res) => {
 })
 
 
-//* User Registration
+//* User Registration update
 app.post('/api/user/register', (req,res) => {
     const user = new User(req.body);
     user.save((err, userData) => {
